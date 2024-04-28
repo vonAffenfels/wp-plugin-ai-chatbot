@@ -20,4 +20,5 @@ if (file_exists($autoloadPath)) {
     require_once $autoloadPath;
 }
 
-Plugin::registerPlugin(__FILE__, defined('WP_DEBUG') && WP_DEBUG);
+$plugin = new Plugin();
+$plugin->init();

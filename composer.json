@@ -16,12 +16,6 @@
     "ai",
     "chatbot"
   ],
-  "repositories": [
-    {
-      "type": "git",
-      "url": "git@github.com:vonAffenfels/vaf-wp-framework.git"
-    }
-  ],
   "config": {
     "optimize-autoloader": true,
     "classmap-authoritative": true,
@@ -40,10 +34,9 @@
       "WP\\Plugin\\AIChatbot\\": "src"
     }
   },
-  "require-dev": {
+  "require": {
     "php": ">=8.1",
     "guzzlehttp/guzzle": "^7.0",
-    "squizlabs/php_codesniffer": "^3.6",
-    "vonaffenfels/vaf-wp-framework": "^0.2"
+    "hkulekci/qdrant": "^0.5.2"
   }
 }
