@@ -1,0 +1,49 @@
+{
+  "name": "vnrag/wp-plugin-ai-chatbot",
+  "type": "wordpress-plugin",
+  "description": "Plugin to create a Chatbot with Vector Search and LLM Support",
+  "authors": [
+    {
+      "name": "Niklas Nellinger",
+      "email": "niklas.nellinger@vonaffenfels.de",
+      "homepage": "https://www.vonaffenfels.de"
+    }
+  ],
+  "keywords": [
+    "wordpress",
+    "wp",
+    "plugin",
+    "ai",
+    "chatbot"
+  ],
+  "repositories": [
+    {
+      "type": "git",
+      "url": "git@github.com:vonAffenfels/vaf-wp-framework.git"
+    }
+  ],
+  "config": {
+    "optimize-autoloader": true,
+    "classmap-authoritative": true,
+    "platform": {
+      "php": "8.1"
+    },
+    "sort-packages": true,
+    "allow-plugins": {
+      "php-http/discovery": true
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "autoload": {
+    "psr-4": {
+      "WP\\Plugin\\AIChatbot\\": "src"
+    }
+  },
+  "require-dev": {
+    "php": ">=8.1",
+    "guzzlehttp/guzzle": "^7.0",
+    "squizlabs/php_codesniffer": "^3.6",
+    "vonaffenfels/vaf-wp-framework": "^0.2"
+  }
+}
