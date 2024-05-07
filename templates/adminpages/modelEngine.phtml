@@ -1,0 +1,70 @@
+<?php
+
+use WP\Plugin\AIChatbot\Settings\Connection;
+
+?>
+<div class="wp-plugin-ai-chatbot page-model-engine">
+    <form method="post" action="">
+        <?php
+        wp_nonce_field('wp-ai-chatbot-model-engine') ?>
+        <input type="hidden" name="action" value="update">
+
+        <table class="form-table" role="presentation">
+            <tbody>
+            <tr>
+                <th scope="row">
+                    <label for="model-engine">Model Engine</label>
+                </th>
+                <td>
+                    <select
+                        <?php
+                        echo $this->activeEngine->isFromEnv() ? 'disabled="disabled"' : '' ?>
+                            id="model-engine"
+                            name="model-engine"
+                    >
+                        <?php
+                        foreach ($this->engines as $id => $engine) : ?>
+                            <option
+                                <?php
+                                echo (($this->activeEngine)() === $id) ? 'selected="selected"' : '' ?>
+                                    value="<?php
+                                    echo $id ?>"
+                            >
+                                <?php
+                                echo $engine['description'] ?>
+                            </option>
+                        <?php
+                        endforeach; ?>
+                    </select>
+                </td>
+            </tr>
+            <tr data-connection="<?php
+            echo Connection::FIELD_HOST ?>">
+                <th scope="row">
+                    <label for="<?php
+                    echo Connection::FIELD_HOST ?>">Host</label>
+                </th>
+                <td>
+                    <input
+                            type="text"
+                            id="<?php
+                            echo Connection::FIELD_HOST ?>"
+                            name="<?php
+                            echo Connection::FIELD_HOST ?>"
+                            value="<?php
+                            echo $this->connection->getHost(); ?>"
+                    >
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <p class="submit">
+            <input type="submit" name="submit" id="submit" class="button button-primary" value="Save settings">
+        </p>
+    </form>
+
+    <input type="text" name="test_chatbot" id="test_chatbot">
+    <button name="test_chatbot_submit" id="test_chatbot_submit" class="button button-primary">Test Chatbot</button>
+    <p id="text_chatbot_response"></p>
+</div>

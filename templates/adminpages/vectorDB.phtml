@@ -1,0 +1,43 @@
+<div class="wp-plugin-ai-chatbot page-model-engine">
+    <form method="post" action="">
+        <?php
+        wp_nonce_field('wp-ai-chatbot-vectordb-engine') ?>
+        <input type="hidden" name="action" value="update">
+
+        <table class="form-table" role="presentation">
+            <tbody>
+            <tr>
+                <th scope="row">
+                    <label for="model-engine">Vector DB</label>
+                </th>
+                <td>
+                    <select
+                        <?php
+                        echo $this->activeEngine->isFromEnv() ? 'disabled="disabled"' : '' ?>
+                            id="model-engine"
+                            name="model-engine"
+                    >
+                        <?php
+                        foreach ($this->engines as $id => $engine) : ?>
+                            <option
+                                <?php
+                                echo (($this->activeEngine)() === $id) ? 'selected="selected"' : '' ?>
+                                    value="<?php
+                                    echo $id ?>"
+                            >
+                                <?php
+                                echo $engine['description'] ?>
+                            </option>
+                        <?php
+                        endforeach; ?>
+                    </select>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <p class="submit">
+            <input type="submit" name="submit" id="submit" class="button button-primary" value="Save settings">
+        </p>
+    </form>
+</div>

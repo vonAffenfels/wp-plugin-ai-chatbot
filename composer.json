@@ -1,29 +1,36 @@
 {
   "name": "vnrag/wp-plugin-ai-chatbot",
   "type": "wordpress-plugin",
-  "description": "Plugin to create a Chatbot with Vector Search and LLM Support",
   "authors": [
     {
-      "name": "Niklas Nellinger",
-      "email": "niklas.nellinger@vonaffenfels.de",
+      "name": "von Affenfels",
+      "email": "team-php@vonaffenfels.de",
       "homepage": "https://www.vonaffenfels.de"
     }
   ],
-  "keywords": [
-    "wordpress",
-    "wp",
-    "plugin",
-    "ai",
-    "chatbot"
+  "repositories": [
+    {
+      "type": "git",
+      "url": "git@github.com:vonAffenfels/vaf-wp-framework.git"
+    }
   ],
+  "require": {
+    "php": "^8.1",
+    "guzzlehttp/guzzle": "^7.0",
+    "hkulekci/qdrant": "^0.5.2",
+    "opensearch-project/opensearch-php": "^2.3",
+    "vonaffenfels/vaf-wp-framework": "^0.2.33"
+  },
   "config": {
     "optimize-autoloader": true,
-    "classmap-authoritative": true,
-    "platform": {
-      "php": "8.1"
+    "preferred-install": {
+      "vonaffenfels/vaf-wp-framework": "source",
+      "*": "dist"
     },
+    "classmap-authoritative": true,
     "sort-packages": true,
     "allow-plugins": {
+      "composer/installers": true,
       "php-http/discovery": true
     }
   },
@@ -34,9 +41,13 @@
       "WP\\Plugin\\AIChatbot\\": "src"
     }
   },
-  "require": {
-    "php": ">=8.1",
-    "guzzlehttp/guzzle": "^7.0",
-    "hkulekci/qdrant": "^0.5.2"
+  "scripts": {
+    "post-autoload-dump": [
+      "@build-container"
+    ],
+    "build-container": [
+      "[ -d \"./container\" ] && (chmod a+rw -R container || sudo chmod a+rw -R container) || true",
+      "WP\\Plugin\\AIChatbot\\Plugin::buildContainer"
+    ]
   }
 }

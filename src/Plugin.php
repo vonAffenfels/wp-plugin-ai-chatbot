@@ -2,27 +2,55 @@
 
 namespace WP\Plugin\AIChatbot;
 
-class Plugin
-{
-    public function init(): void
-    {
-        $settingsPage = new SettingsPage();
-        $settingsPage->initSettingsPage();
+use ReflectionClass;
+use Symfony\Component\DependencyInjection\ChildDefinition;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+use WP\Plugin\AIChatbot\Attributes\IsModelEngine;
+use WP\Plugin\AIChatbot\Attributes\IsVectorDB;
 
-        $this->ollamaConnector = new OllamaConnector();
-        $this->ollamaConnector->installRequiredModalsIfNeeded();
-        $this->addHooks();
+class Plugin extends \VAF\WP\Framework\Plugin
+{
+
+    public function configureContainer(ContainerBuilder $builder, ContainerConfigurator $configurator): void
+    {
+        $builder->registerAttributeForAutoconfiguration(
+            IsModelEngine::class,
+            static function (
+                ChildDefinition $defintion,
+                IsModelEngine $attribute,
+                ReflectionClass $reflector
+            ) use ($builder): void {
+                $defintion->setArgument('$id', $attribute->id);
+                $defintion->setArgument('$description', $attribute->description);
+                $defintion->setArgument('$shownConnectionSettings', $attribute->shownConnectionSettings);
+                $defintion->addTag('wp_plugin_ai_chatbot.engine');
+                $builder->setAlias('wp_plugin_ai_chatbot.engine.' . $attribute->id, $reflector->getName())
+                    ->setPublic(true);
+            }
+        );
+
+        $builder->registerAttributeForAutoconfiguration(
+            IsVectorDB::class,
+            static function (
+                ChildDefinition $defintion,
+                IsVectorDB $attribute,
+                ReflectionClass $reflector
+            ) use ($builder): void {
+                $defintion->setArgument('$id', $attribute->id);
+                $defintion->setArgument('$description', $attribute->description);
+                $defintion->setArgument('$shownConnectionSettings', $attribute->shownConnectionSettings);
+                $defintion->addTag('wp_plugin_ai_chatbot.vectorDB');
+                $builder->setAlias('wp_plugin_ai_chatbot.vectorDB.' . $attribute->id, $reflector->getName())
+                    ->setPublic(true);
+            }
+        );
     }
 
-
-    private function addHooks(): void
+    public function getSearchHandler(): ModelHandler
     {
-        add_action('save_post', function ($post_id){
-
-            $postContent = strip_tags(apply_filters( 'the_content', get_post_field( 'post_content', $post_id ) ));
-            $embedding = $this->ollamaConnector->generateEmbedding($postContent);
-
-
-        });
+        /** @var ModelHandler $handler */
+        $handler = $this->getContainer()->get('wp_plugin_ai_chatbot.model-handler');
+        return $handler;
     }
 }
