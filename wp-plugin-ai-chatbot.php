@@ -40,7 +40,8 @@ add_action('save_post', function ($postID){
     $plugin = apply_filters('vaf-get-plugin', null, 'wp-plugin-ai-chatbot');
 
     $postContent = strip_tags(apply_filters( 'the_content', get_post_field( 'post_content', $postID) ));
-    $embedding = $plugin->getSearchHandler()->generateEmbedding($postContent);
+    $embedding = $plugin->getModelHandler()->generateEmbedding($postContent);
+    $plugin->getVectorDBHandler()->saveEmbedding($embedding);
 
     $config = new Config('qdrant');
     $client = new Qdrant(new GuzzleClient($config));

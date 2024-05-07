@@ -5,7 +5,7 @@ namespace WP\Plugin\AIChatbot\AdminPages;
 use Symfony\Component\DependencyInjection\Attribute\TaggedIterator;
 use VAF\WP\Framework\Request;
 use WP\Plugin\AIChatbot\Plugin;
-use WP\Plugin\AIChatbot\Settings\ActiveEngine;
+use WP\Plugin\AIChatbot\Settings\ActiveVectorDB;
 use WP\Plugin\AIChatbot\Settings\Connection;
 use WP\Plugin\AIChatbot\Templates\AdminPages\VectorDBPageTemplate;
 use WP\Plugin\AIChatbot\VectorDB\VectorDB;
@@ -21,7 +21,7 @@ final class VectorDBPage
         private readonly Plugin $plugin,
         private readonly VectorDBPageTemplate $pageTemplate,
         private readonly Request $request,
-        private readonly ActiveEngine $activeEngine,
+        private readonly ActiveVectorDB $activeEngine,
         private readonly Connection $connection,
         #[TaggedIterator('wp_plugin_ai_chatbot.vectorDB')]
         iterable $engines,
@@ -41,7 +41,7 @@ final class VectorDBPage
 
     private function save(): void
     {
-        check_admin_referer('wp-ai-chatbot-model-engine');
+        check_admin_referer('wp-ai-chatbot-vectordb');
 
         $action = $this->request->getParam('action', Request::TYPE_POST, '');
 
@@ -50,15 +50,35 @@ final class VectorDBPage
         }
 
         // Finally we can update the settings
-        $activeEngine = $this->request->getParam('model-engine', Request::TYPE_POST);
+        $activeEngine = $this->request->getParam('vectorDB', Request::TYPE_POST);
         if (!is_null($activeEngine) && $this->hasEngine($activeEngine) && $activeEngine !== ($this->activeEngine)()) {
             ($this->activeEngine)($activeEngine);
         }
 
-        $host = $this->request->getParam(Connection::FIELD_HOST, Request::TYPE_POST);
-        if (!is_null($host)) {
-            if ($this->connection->getHost() != $host) {
-                $this->connection->setHost($host);
+        $hosts = $this->request->getParam(Connection::FIELD_HOSTS, Request::TYPE_POST);
+        if (!is_null($hosts)) {
+            $hosts = array_map('trim', explode("\n", $hosts));
+
+            if ($this->connection->getHosts() != $hosts) {
+                $this->connection->setHosts($hosts);
+            }
+        }
+
+        $user = $this->request->getParam(Connection::FIELD_USER, Request::TYPE_POST);
+        if (!is_null($user) && $this->connection->getUser() !== $user) {
+            $this->connection->setUser($user);
+        }
+
+        $pass = $this->request->getParam(Connection::FIELD_PASS, Request::TYPE_POST);
+        if (!is_null($pass) && $this->connection->getPass() !== $pass) {
+            $this->connection->setPass($pass);
+        }
+
+        $disableSslVerify = $this->request->getParam(Connection::FIELD_DISABLE_SSL_VERIFY, Request::TYPE_POST);
+        if (!is_null($disableSslVerify)) {
+            $disableSslVerify = $disableSslVerify === '1';
+            if ($this->connection->getDisableSslVerify() !== $disableSslVerify) {
+                $this->connection->setDisableSslVerify($disableSslVerify);
             }
         }
 

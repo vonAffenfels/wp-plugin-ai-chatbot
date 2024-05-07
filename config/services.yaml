@@ -14,5 +14,5 @@ services:
   WP\Plugin\AIChatbot\ModelEngine\ModelEngine:
     factory: ['@WP\Plugin\AIChatbot\ModelEngine\Factory', 'getModelEngine']
 
-  WP\Plugin\AIChatbot\VectorDB\VecotrDB:
+  WP\Plugin\AIChatbot\VectorDB\VectorDB:
     factory: [ '@WP\Plugin\AIChatbot\VectorDB\Factory', 'getVectorDB' ]

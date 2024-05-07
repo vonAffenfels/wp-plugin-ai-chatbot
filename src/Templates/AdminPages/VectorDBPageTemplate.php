@@ -4,8 +4,7 @@ namespace WP\Plugin\AIChatbot\Templates\AdminPages;
 
 use VAF\WP\Framework\Template\Attribute\IsTemplate;
 use VAF\WP\Framework\Template\Template;
-use WP\Plugin\AIChatbot\ModelEngine\ModelEngine;
-use WP\Plugin\AIChatbot\Settings\ActiveEngine;
+use WP\Plugin\AIChatbot\Settings\ActiveVectorDB;
 use WP\Plugin\AIChatbot\Settings\Connection;
 use WP\Plugin\AIChatbot\VectorDB\VectorDB;
 
@@ -15,7 +14,7 @@ use WP\Plugin\AIChatbot\VectorDB\VectorDB;
 //#[UseAdminAjax('get-top-ten-queries')]
 class VectorDBPageTemplate extends Template
 {
-    private ActiveEngine $activeEngine;
+    private ActiveVectorDB $activeEngine;
     private Connection $connection;
     private array $engines = [];
 
@@ -34,7 +33,7 @@ class VectorDBPageTemplate extends Template
         return $this;
     }
 
-    public function setActiveEngine(ActiveEngine $engine): self
+    public function setActiveEngine(ActiveVectorDB $engine): self
     {
         $this->activeEngine = $engine;
         return $this;

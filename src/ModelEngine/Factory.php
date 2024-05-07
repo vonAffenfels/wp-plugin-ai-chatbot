@@ -20,7 +20,7 @@ final class Factory
         $adapter = ($this->adapter)();
         $container = $this->plugin->getContainer();
 
-        $service = '.engine.' . $adapter;
+        $service = 'wp_plugin_ai_chatbot.engine.' . $adapter;
 
         if (!$container->has($service)) {
             throw new Exception('Cannot find adapter "' . $adapter . '"!');

@@ -1,7 +1,10 @@
 <div class="wp-plugin-ai-chatbot page-model-engine">
     <form method="post" action="">
         <?php
-        wp_nonce_field('wp-ai-chatbot-vectordb-engine') ?>
+
+        use WP\Plugin\AIChatbot\Settings\Connection;
+
+        wp_nonce_field('wp-ai-chatbot-vectordb') ?>
         <input type="hidden" name="action" value="update">
 
         <table class="form-table" role="presentation">
@@ -14,8 +17,8 @@
                     <select
                         <?php
                         echo $this->activeEngine->isFromEnv() ? 'disabled="disabled"' : '' ?>
-                            id="model-engine"
-                            name="model-engine"
+                            id="vectorDB"
+                            name="vectorDB"
                     >
                         <?php
                         foreach ($this->engines as $id => $engine) : ?>
@@ -31,6 +34,69 @@
                         <?php
                         endforeach; ?>
                     </select>
+                </td>
+            </tr>
+            <tr data-connection="<?php echo Connection::FIELD_HOSTS ?>">
+                <th scope="row">
+                    <label for="<?php echo Connection::FIELD_HOSTS ?>">Hosts</label>
+                </th>
+                <td>
+                        <textarea
+                                rows="3"
+                                id="<?php echo Connection::FIELD_HOSTS ?>"
+                                name="<?php echo Connection::FIELD_HOSTS ?>"
+                            <?php echo $this->connection->isFromEnv(Connection::FIELD_HOSTS) ? 'readonly="readonly"' : '' ?>
+                        ><?php echo implode("\n", $this->connection->getHosts()); ?></textarea>
+                </td>
+            </tr>
+
+            <tr data-connection="<?php echo Connection::FIELD_USER ?>">
+                <th scope="row">
+                    <label for="<?php echo Connection::FIELD_USER ?>">Username</label>
+                </th>
+                <td>
+                    <input
+                        <?php echo $this->connection->isFromEnv(Connection::FIELD_USER) ? 'readonly="readonly"' : '' ?>
+                            id="<?php echo Connection::FIELD_USER ?>"
+                            type="text"
+                            name="<?php echo Connection::FIELD_USER ?>"
+                            value="<?php echo htmlentities($this->connection->getUser()) ?>"
+                    >
+                </td>
+            </tr>
+
+            <tr data-connection="<?php echo Connection::FIELD_PASS ?>">
+                <th scope="row">
+                    <label for="<?php echo Connection::FIELD_PASS ?>">Password</label>
+                </th>
+                <td>
+                    <input
+                        <?php echo $this->connection->isFromEnv(Connection::FIELD_PASS) ? 'readonly="readonly"' : '' ?>
+                            id="<?php echo Connection::FIELD_PASS ?>"
+                            type="password"
+                            name="<?php echo Connection::FIELD_PASS ?>"
+                            value="<?php echo htmlentities($this->connection->getPass()) ?>"
+                    >
+                </td>
+            </tr>
+
+            <tr data-connection="<?php echo Connection::FIELD_DISABLE_SSL_VERIFY ?>">
+                <th scope="row">
+                    <label for="<?php echo Connection::FIELD_DISABLE_SSL_VERIFY ?>">Disable SSL Verify</label>
+                </th>
+                <td>
+                    <fieldset>
+                        <label for="<?php echo Connection::FIELD_DISABLE_SSL_VERIFY ?>">
+                            <input
+                                    id="<?php echo Connection::FIELD_DISABLE_SSL_VERIFY ?>"
+                                    type="checkbox"
+                                    name="<?php echo Connection::FIELD_DISABLE_SSL_VERIFY ?>"
+                                    value="1"
+                                <?php echo $this->connection->getDisableSslVerify() ? 'checked="checked"' : '' ?>
+                                <?php echo $this->connection->isFromEnv(Connection::FIELD_DISABLE_SSL_VERIFY) ? 'disabled="disabled"' : '' ?>
+                            >
+                        </label>
+                    </fieldset>
                 </td>
             </tr>
             </tbody>

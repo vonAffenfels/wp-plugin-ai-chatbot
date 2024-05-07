@@ -4,11 +4,11 @@ namespace WP\Plugin\AIChatbot\VectorDB;
 
 use Exception;
 use WP\Plugin\AIChatbot\Plugin;
-use WP\Plugin\AIChatbot\Settings\ActiveEngine;
+use WP\Plugin\AIChatbot\Settings\ActiveVectorDB;
 
 final class Factory
 {
-    public function __construct(private readonly Plugin $plugin, private readonly ActiveEngine $adapter)
+    public function __construct(private readonly Plugin $plugin, private readonly ActiveVectorDB $adapter)
     {
     }
 

@@ -8,6 +8,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use WP\Plugin\AIChatbot\Attributes\IsModelEngine;
 use WP\Plugin\AIChatbot\Attributes\IsVectorDB;
+use WP\Plugin\AIChatbot\VectorDB\VectorDB;
 
 class Plugin extends \VAF\WP\Framework\Plugin
 {
@@ -47,10 +48,17 @@ class Plugin extends \VAF\WP\Framework\Plugin
         );
     }
 
-    public function getSearchHandler(): ModelHandler
+    public function getModelHandler(): ModelHandler
     {
         /** @var ModelHandler $handler */
         $handler = $this->getContainer()->get('wp_plugin_ai_chatbot.model-handler');
+        return $handler;
+    }
+
+    public function getVectorDBHandler(): VectorDBHandler
+    {
+        /** @var VectorDBHandler $handler */
+        $handler = $this->getContainer()->get('wp_plugin_ai_chatbot.vectorDB-handler');
         return $handler;
     }
 }

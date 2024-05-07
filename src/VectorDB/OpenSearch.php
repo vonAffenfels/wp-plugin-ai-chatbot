@@ -53,6 +53,22 @@ class OpenSearch extends VectorDB
 
     public function saveEmbedding($embedding): ?array
     {
-        return ['test'];
+        $docs = $this->getClient()->search([
+            'index' => 'pkp_offers',
+            'size' => 1000,
+            'body' => [
+                'query' => [
+                    'bool' => [
+                        'filter' => [
+                            'term' => [
+                                '_id' => '28589'
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]);
+        var_dump($docs['hits']);
+        die();
     }
 }
