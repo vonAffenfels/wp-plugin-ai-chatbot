@@ -16,7 +16,6 @@ class AnswerGenerator
 
     public function generateAnswerStream($question)
     {
-        $this->searchRelatedPosts($question);
         return $this->modelHandler->askChatbotAsync($question);
     }
 
@@ -25,10 +24,5 @@ class AnswerGenerator
     {
         $vector = $this->modelHandler->generateEmbedding($question);
         $relatedPosts = $this->vectorDBHandler->searchVectorDB($vector);
-
-        trigger_error($relatedPosts);
-
-        echo "<pre>", var_dump($relatedPosts), "</pre>";
-        die();
     }
 }
