@@ -16,4 +16,14 @@ class ModelHandler
     public function generateEmbedding(string $text) {
         return $this->engine->generateEmbedding($text);
     }
+
+
+    public function askChatbotAsync(string $text) {
+        return $this->engine->askChatbotAsync($text);
+    }
+
+    public function getClient()
+    {
+        return $this->engine->getClient();
+    }
 }

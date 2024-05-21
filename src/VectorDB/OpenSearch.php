@@ -7,6 +7,7 @@ use OpenSearch\Client;
 use OpenSearch\ClientBuilder;
 use WP\Plugin\AIChatbot\Attributes\IsVectorDB;
 use WP\Plugin\AIChatbot\Settings\Connection;
+use WP\Plugin\AIChatbot\Settings\PostTypes;
 
 #[IsVectorDB(
     id: 'opensearch',
@@ -15,18 +16,22 @@ use WP\Plugin\AIChatbot\Settings\Connection;
         Connection::FIELD_HOST,
         Connection::FIELD_USER,
         Connection::FIELD_PASS,
-        Connection::FIELD_DISABLE_SSL_VERIFY
+        Connection::FIELD_DISABLE_SSL_VERIFY,
+        Connection::FIELD_INDEX
     ]
 )]
 class OpenSearch extends VectorDB
 {
     public function __construct(
         protected readonly Connection $connection,
+        protected readonly PostTypes $postTypes,
         string $id,
         string $description = '',
         array $shownConnectionSettings = []
     ) {
-        parent::__construct($id, $description, $shownConnectionSettings);
+        parent::__construct($postTypes, $id, $description, $shownConnectionSettings);
+
+        $this->createIndexIfNotExisting();
     }
 
     protected ?Client $client = null;
@@ -51,24 +56,74 @@ class OpenSearch extends VectorDB
         return $this->client;
     }
 
-    public function saveEmbedding($embedding): ?array
+    public function saveEmbedding($postID, $embedding): callable|array
     {
-        $docs = $this->getClient()->search([
-            'index' => 'pkp_offers',
-            'size' => 1000,
+        return $this->getClient()->update([
+            'index' => $this->connection->getIndex(),
+            'refresh' => true,
             'body' => [
-                'query' => [
-                    'bool' => [
-                        'filter' => [
-                            'term' => [
-                                '_id' => '28589'
+                'doc' => [
+                    'embedding' => $embedding,
+                    'postID' => $postID
+                ],
+                'doc_as_upsert' => true
+            ],
+            'id' => $postID
+        ]);
+    }
+
+    private function createIndexIfNotExisting(): void
+    {
+        if (!$this->indexExists()) {
+            $this->getClient()->indices()->create([
+                'index' => $this->connection->getIndex(),
+                'body' => [
+                    'settings' => [
+                        "index.knn" => true
+                    ],
+                    "mappings" => [
+                        "properties" => [
+                            "embedding" => [
+                                "type" => "knn_vector",
+                                "dimension" => 4096
+                            ],
+                            "postID" => [
+                                "type" => "text"
                             ]
                         ]
                     ]
                 ]
+            ]);
+        }
+    }
+
+
+    private function indexExists(): bool
+    {
+        return $this->getClient()->indices()->exists([
+            'index' => $this->connection->getIndex(),
+        ]);
+    }
+
+    public function vectorSearch($vector): ?array
+    {
+        $docs = $this->client->search([
+            'index' => $this->connection->getIndex(),
+            'size' => 5,
+            'body' => [
+                'query' => [
+                    "knn" => [
+                         "embedding" => [
+                             "vector"=> $vector,
+                             "k" => 3
+                         ]
+                    ]
+                ],
+                "fields"=> [
+                    "postID"
+                    ]
             ]
         ]);
-        var_dump($docs['hits']);
-        die();
+        return $docs;
     }
 }

@@ -15,6 +15,7 @@ use WP\Plugin\AIChatbot\OpenSearchAWSService;
     self::FIELD_HOST => '',
     self::FIELD_USER => '',
     self::FIELD_PASS => '',
+    self::FIELD_INDEX => '',
     self::FIELD_DISABLE_SSL_VERIFY => false,
     self::FIELD_OS_AWS_REGION => '',
     self::FIELD_OS_AWS_SERVICE => OpenSearchAWSService::OPENSEARCH,
@@ -36,6 +37,7 @@ class Connection extends EnvAwareSetting
     public const FIELD_OS_AWS_KEY = 'osAWSKey';
     public const FIELD_OS_AWS_SECRET = 'osAWSSecret';
     public const FIELD_HOST = 'host';
+    public const FIELD_INDEX = 'embeddingIndex';
 
     public function getEndpoint(): string
     {
@@ -78,6 +80,17 @@ class Connection extends EnvAwareSetting
     public function setToken(string $value): self
     {
         $this->set($value, self::FIELD_TOKEN, false);
+        return $this;
+    }
+
+    public function getIndex(): string
+    {
+        return $this->get(self::FIELD_INDEX);
+    }
+
+    public function setIndex(string $value): self
+    {
+        $this->set($value, self::FIELD_INDEX);
         return $this;
     }
 

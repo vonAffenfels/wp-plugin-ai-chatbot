@@ -9,18 +9,7 @@
  * Author URI:        https://www.vonaffenfels.de
  */
 
-use Qdrant\Config;
-use Qdrant\Http\GuzzleClient;
-use Qdrant\Models\PointsStruct;
-use Qdrant\Models\PointStruct;
-use Qdrant\Models\Request\CreateCollection;
-use Qdrant\Models\Request\VectorParams;
-use Qdrant\Models\VectorStruct;
-use Qdrant\Qdrant;
 use WP\Plugin\AIChatbot\Plugin;
-
-
-
 
 
 if (!defined('ABSPATH')) {
@@ -33,26 +22,3 @@ if (file_exists($autoloadPath)) {
 }
 
 Plugin::registerPlugin(__FILE__, defined('WP_DEBUG') && WP_DEBUG);
-
-add_action('save_post', function ($postID){
-
-    /** @var WP\Plugin\AIChatbot\Plugin $plugin */
-    $plugin = apply_filters('vaf-get-plugin', null, 'wp-plugin-ai-chatbot');
-
-    $postContent = strip_tags(apply_filters( 'the_content', get_post_field( 'post_content', $postID) ));
-    $embedding = $plugin->getModelHandler()->generateEmbedding($postContent);
-    $plugin->getVectorDBHandler()->saveEmbedding($embedding);
-
-    $config = new Config('qdrant');
-    $client = new Qdrant(new GuzzleClient($config));
-
-
-    $points = new PointsStruct();
-    $points->addPoint(
-        new PointStruct(
-            $postID,
-            new VectorStruct($embedding)
-        )
-    );
-    $client->collections('test_collection')->points()->upsert($points);
-});

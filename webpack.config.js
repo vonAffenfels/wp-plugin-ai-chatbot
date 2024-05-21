@@ -4,6 +4,7 @@ const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 module.exports = {
     entry: {
         modelEngine: './js/modelEngine.js',
+        vectorDB: './js/vectorDB.js',
     },
     plugins: [
         new NodePolyfillPlugin()

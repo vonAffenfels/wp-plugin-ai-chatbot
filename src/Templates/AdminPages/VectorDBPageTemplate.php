@@ -3,19 +3,24 @@
 namespace WP\Plugin\AIChatbot\Templates\AdminPages;
 
 use VAF\WP\Framework\Template\Attribute\IsTemplate;
+use VAF\WP\Framework\Template\Attribute\UseAdminAjax;
+use VAF\WP\Framework\Template\Attribute\UseScript;
 use VAF\WP\Framework\Template\Template;
 use WP\Plugin\AIChatbot\Settings\ActiveVectorDB;
 use WP\Plugin\AIChatbot\Settings\Connection;
+use WP\Plugin\AIChatbot\Settings\PostTypes;
 use WP\Plugin\AIChatbot\VectorDB\VectorDB;
 
 
 #[IsTemplate(templateFile: '@wp-plugin-ai-chatbot/adminpages/vectorDB')]
-#[UseScript(src: 'js/modelEngine.min.js', deps: ['jquery'])]
-//#[UseAdminAjax('get-top-ten-queries')]
+#[UseScript(src: 'js/vectorDB.min.js', deps: ['jquery'])]
+#[UseAdminAjax('regenerate-embeddings')]
 class VectorDBPageTemplate extends Template
 {
     private ActiveVectorDB $activeEngine;
     private Connection $connection;
+
+    private PostTypes $postTypes;
     private array $engines = [];
 
     public function addEngine(VectorDB $engine): self
@@ -33,6 +38,12 @@ class VectorDBPageTemplate extends Template
         return $this;
     }
 
+    public function setPostTypes(PostTypes $postTypes): self
+    {
+        $this->postTypes = $postTypes;
+        return $this;
+    }
+
     public function setActiveEngine(ActiveVectorDB $engine): self
     {
         $this->activeEngine = $engine;
@@ -44,7 +55,8 @@ class VectorDBPageTemplate extends Template
         return [
             'engines' => $this->engines,
             'activeEngine' => $this->activeEngine,
-            'connection' => $this->connection
+            'connection' => $this->connection,
+            'postTypes' => $this->postTypes
         ];
     }
 }

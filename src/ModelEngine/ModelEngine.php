@@ -2,6 +2,9 @@
 
 namespace WP\Plugin\AIChatbot\ModelEngine;
 
+use GuzzleHttp\Promise;
+
+
 abstract class ModelEngine
 {
     public function __construct(
@@ -30,5 +33,7 @@ abstract class ModelEngine
     }
 
     abstract public function generateEmbedding(string $text): ?array;
+
+    abstract public function askChatbotAsync(string $question);
 
 }

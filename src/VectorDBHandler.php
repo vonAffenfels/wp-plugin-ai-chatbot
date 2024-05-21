@@ -12,8 +12,17 @@ class VectorDBHandler
         private readonly VectorDB $engine,
     ) {
     }
+    public function saveEmbedding(int $postID, array $embedding) {
+        return $this->engine->saveEmbedding($postID, $embedding);
+    }
 
-    public function saveEmbedding(array $embedding) {
-        return $this->engine->saveEmbedding($embedding);
+
+    public function searchVectorDB(array $vector) {
+        return $this->engine->vectorSearch($vector);
+    }
+
+    public function getPostTypes()
+    {
+        return $this->engine->getPostTypes();
     }
 }

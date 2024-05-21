@@ -1,8 +1,15 @@
-<div class="wp-plugin-ai-chatbot page-model-engine">
+<div class="wp-plugin-ai-chatbot page-vectorDB">
     <form method="post" action="">
         <?php
 
         use WP\Plugin\AIChatbot\Settings\Connection;
+        use WP\Plugin\AIChatbot\Settings\PostTypes;
+
+        $this->availablePostTypes = get_post_types([
+                'public'                => true,
+                'exclude_from_search'   => false
+            ],'objects');
+
 
         wp_nonce_field('wp-ai-chatbot-vectordb') ?>
         <input type="hidden" name="action" value="update">
@@ -80,6 +87,43 @@
                 </td>
             </tr>
 
+            <tr data-connection="<?php echo Connection::FIELD_INDEX ?>">
+                <th scope="row">
+                    <label for="<?php echo Connection::FIELD_INDEX ?>">Index</label>
+                </th>
+                <td>
+                    <input
+                        <?php echo $this->connection->isFromEnv(Connection::FIELD_INDEX) ? 'readonly="readonly"' : '' ?>
+                            id="<?php echo Connection::FIELD_INDEX ?>"
+                            type="text"
+                            name="<?php echo Connection::FIELD_INDEX ?>"
+                            value="<?php echo htmlentities($this->connection->getIndex()) ?>"
+                    >
+                </td>
+            </tr>
+
+            <tr data-post_types="<?php echo PostTypes::FIELD_POST_TYPES ?>">
+                <th scope="row">
+                    <label>Post Types</label>
+                </th>
+                <td>
+                    <?php foreach ($this->availablePostTypes as $postType) :?>
+                    <input
+                           data-post_types-input="<?php echo $postType->name?>"
+                           type="checkbox"
+                           id="<?php echo PostTypes::FIELD_POST_TYPES . '[' . $postType->name . ']' ?>"
+                           name="<?php echo PostTypes::FIELD_POST_TYPES . '[' . $postType->name . ']' ?>"
+                           value="1"
+                           <?php if (array_key_exists($postType->name, $this->postTypes->getPostTypes())) {
+                                echo 'checked="checked"';
+                           }?>
+                    >
+                        <label for="<?php echo PostTypes::FIELD_POST_TYPES . '[' . $postType->name . ']' ?>"><?php echo $postType->label?></label>
+                        <br>
+                    <?php endforeach; ?>
+                </td>
+            </tr>
+
             <tr data-connection="<?php echo Connection::FIELD_DISABLE_SSL_VERIFY ?>">
                 <th scope="row">
                     <label for="<?php echo Connection::FIELD_DISABLE_SSL_VERIFY ?>">Disable SSL Verify</label>
@@ -105,5 +149,15 @@
         <p class="submit">
             <input type="submit" name="submit" id="submit" class="button button-primary" value="Save settings">
         </p>
+
     </form>
+    <p>
+        <input type="button" name="regenerate" id="regenerate" class="button button-primary" value="Neu generieren">
+
+        <span class="spinner"></span>
+    </p>
+
+    <div id="regenerate_log">
+
+    </div>
 </div>

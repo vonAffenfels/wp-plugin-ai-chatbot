@@ -3,6 +3,7 @@
 namespace WP\Plugin\AIChatbot\Templates\AdminPages;
 
 use VAF\WP\Framework\Template\Attribute\IsTemplate;
+use VAF\WP\Framework\Template\Attribute\UseAdminAjax;
 use VAF\WP\Framework\Template\Attribute\UseScript;
 use VAF\WP\Framework\Template\Template;
 use WP\Plugin\AIChatbot\ModelEngine\ModelEngine;
@@ -12,7 +13,6 @@ use WP\Plugin\AIChatbot\Settings\Connection;
 
 #[IsTemplate(templateFile: '@wp-plugin-ai-chatbot/adminpages/modelEngine')]
 #[UseScript(src: 'js/modelEngine.min.js', deps: ['jquery'])]
-//#[UseAdminAjax('get-top-ten-queries')]
 class ModelEnginePageTemplate extends Template
 {
     private Connection $connection;

@@ -2,8 +2,8 @@
 
 namespace WP\Plugin\AIChatbot\ModelEngine;
 
+use GuzzleHttp\Promise;
 use WP\Plugin\AIChatbot\Attributes\IsModelEngine;
-use WP\Plugin\AIChatbot\Settings\Connection;
 
 #[IsModelEngine(
     id: 'null',
@@ -13,6 +13,11 @@ class NullEngine extends ModelEngine
 {
 
     public function generateEmbedding(string $text): ?array
+    {
+        return null;
+    }
+
+    public function askChatbotAsync($question)
     {
         return null;
     }

@@ -19,6 +19,7 @@
     "guzzlehttp/guzzle": "^7.0",
     "hkulekci/qdrant": "^0.5.2",
     "opensearch-project/opensearch-php": "^2.3",
+    "symfony/http-client": "^7.0",
     "vonaffenfels/vaf-wp-framework": "^0.2.33"
   },
   "config": {

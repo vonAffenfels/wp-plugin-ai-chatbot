@@ -7,6 +7,7 @@ use VAF\WP\Framework\Request;
 use WP\Plugin\AIChatbot\Plugin;
 use WP\Plugin\AIChatbot\Settings\ActiveVectorDB;
 use WP\Plugin\AIChatbot\Settings\Connection;
+use WP\Plugin\AIChatbot\Settings\PostTypes;
 use WP\Plugin\AIChatbot\Templates\AdminPages\VectorDBPageTemplate;
 use WP\Plugin\AIChatbot\VectorDB\VectorDB;
 use VAF\WP\Framework\Utils\NoticeType;
@@ -23,6 +24,7 @@ final class VectorDBPage
         private readonly Request $request,
         private readonly ActiveVectorDB $activeEngine,
         private readonly Connection $connection,
+        private readonly PostTypes $postTypes,
         #[TaggedIterator('wp_plugin_ai_chatbot.vectorDB')]
         iterable $engines,
     )
@@ -49,7 +51,6 @@ final class VectorDBPage
             return;
         }
 
-        // Finally we can update the settings
         $activeEngine = $this->request->getParam('vectorDB', Request::TYPE_POST);
         if (!is_null($activeEngine) && $this->hasEngine($activeEngine) && $activeEngine !== ($this->activeEngine)()) {
             ($this->activeEngine)($activeEngine);
@@ -72,6 +73,18 @@ final class VectorDBPage
         $pass = $this->request->getParam(Connection::FIELD_PASS, Request::TYPE_POST);
         if (!is_null($pass) && $this->connection->getPass() !== $pass) {
             $this->connection->setPass($pass);
+        }
+
+        $index = $this->request->getParam(Connection::FIELD_INDEX, Request::TYPE_POST);
+        if (!is_null($index) && $this->connection->getIndex() !== $index) {
+            $this->connection->setIndex($index);
+        }
+
+        $postTypes = $this->request->getParam(PostTypes::FIELD_POST_TYPES, Request::TYPE_POST);
+        if (!is_null($postTypes)) {
+            if ($this->postTypes->getPostTypes() != $postTypes) {
+                $this->postTypes->setPostTypes($postTypes);
+            }
         }
 
         $disableSslVerify = $this->request->getParam(Connection::FIELD_DISABLE_SSL_VERIFY, Request::TYPE_POST);
@@ -128,6 +141,7 @@ final class VectorDBPage
 
         $this->pageTemplate->setActiveEngine($this->activeEngine);
         $this->pageTemplate->setConnection($this->connection);
+        $this->pageTemplate->setPostTypes($this->postTypes);
 
         $this->pageTemplate->output();
     }
