@@ -63,7 +63,7 @@ class ChatbotEndpoint
             foreach ($response['postIDs'] as $postID)
             {
                 echo "event: message\n";
-                echo "data: <a href='" . get_permalink($postID) . "'>" . get_the_title($postID) . "</a>\n\n";
+                echo "data: <a href='" . get_permalink($postID) . "'>" . get_the_title($postID) . "</a><br>\n\n";
                 ob_flush();
                 flush();
             }
@@ -109,6 +109,19 @@ class ChatbotEndpoint
                 if (connection_aborted()) {
                     break;
                 }
+            }
+
+            echo "event: message\n";
+            echo "data: Zugehörige Artikel: \n\n";
+            ob_flush();
+            flush();
+
+            foreach ($response['postIDs'] as $postID)
+            {
+                echo "event: message\n";
+                echo "data: <a href='" . get_permalink($postID) . "'>" . get_the_title($postID) . "</a>\n\n";
+                ob_flush();
+                flush();
             }
 
             echo "event: stop\n";

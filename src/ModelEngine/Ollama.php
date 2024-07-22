@@ -75,7 +75,7 @@ class Ollama extends ModelEngine
                     $question .
                     ' auf Basis dieser Informationen ' .
                     $relatedPostsContent .
-                    ' in 3 einfachen Sätzen',
+                    ' in 3 einfachen Sätzen unbedingt auf Deutsch',
 
                 'stream' => true
             ])
