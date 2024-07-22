@@ -18,7 +18,7 @@ class ChatbotFrontend
     }
 
     #[Hook(hook: 'wp_footer')]
-    #[Hook(hook: 'chatbot-test-hook')]
+    #[Hook(hook: 'chatbot-frontend-hook')]
     public function registerChatbotFrontend(): void
     {
         if (get_option('ai-chatbot-frontend-enabled', false))
