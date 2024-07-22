@@ -6,6 +6,7 @@ namespace WP\Plugin\AIChatbot\VectorDB;
 use OpenSearch\Client;
 use OpenSearch\ClientBuilder;
 use WP\Plugin\AIChatbot\Attributes\IsVectorDB;
+use WP\Plugin\AIChatbot\ModelHandler;
 use WP\Plugin\AIChatbot\Settings\Connection;
 use WP\Plugin\AIChatbot\Settings\PostTypes;
 
@@ -27,11 +28,9 @@ class OpenSearch extends VectorDB
         protected readonly PostTypes $postTypes,
         string $id,
         string $description = '',
-        array $shownConnectionSettings = []
+        array $shownConnectionSettings = [],
     ) {
         parent::__construct($postTypes, $id, $description, $shownConnectionSettings);
-
-        $this->createIndexIfNotExisting();
     }
 
     protected ?Client $client = null;
@@ -58,6 +57,7 @@ class OpenSearch extends VectorDB
 
     public function saveEmbedding($postID, $embedding): callable|array
     {
+        $this->createIndexIfNotExisting();
         return $this->getClient()->update([
             'index' => $this->connection->getIndex(),
             'refresh' => true,
@@ -85,7 +85,7 @@ class OpenSearch extends VectorDB
                         "properties" => [
                             "embedding" => [
                                 "type" => "knn_vector",
-                                "dimension" => 4096
+                                "dimension" => 768
                             ],
                             "postID" => [
                                 "type" => "text"
@@ -107,9 +107,9 @@ class OpenSearch extends VectorDB
 
     public function vectorSearch($vector): ?array
     {
-        $docs = $this->client->search([
+        $docs = $this->getClient()->search([
             'index' => $this->connection->getIndex(),
-            'size' => 5,
+            'size' => 3,
             'body' => [
                 'query' => [
                     "knn" => [

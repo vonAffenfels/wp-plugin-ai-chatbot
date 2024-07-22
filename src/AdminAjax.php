@@ -48,4 +48,36 @@ class AdminAjax
             'processed' => $processed
         ]);
     }
+
+
+    #[IsAdminAjaxAction(action: 'install-models', capability: Capabilities::MANAGE_OPTIONS)]
+    public function installModels(
+        ModelEngine $activeModelEngine,
+        string $modelName
+    ): Response
+    {
+        $response = $activeModelEngine->installModelIfNeeded($modelName);
+
+        if (array_key_exists('error', $response))
+        {
+            return Response::error($response['response']);
+        }
+
+        return Response::success([$response['response']]);
+    }
+
+
+    #[IsAdminAjaxAction(action: 'model-is-installed', capability: Capabilities::MANAGE_OPTIONS)]
+    public function isModelInstalled(
+        ModelEngine $activeModelEngine,
+        string $modelName
+    ): Response
+    {
+        if ($activeModelEngine->modelIsInstalled($modelName))
+        {
+            return Response::success([]);
+        }
+
+        return Response::error('');
+    }
 }

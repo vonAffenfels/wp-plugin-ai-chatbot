@@ -5,6 +5,7 @@ module.exports = {
     entry: {
         modelEngine: './js/modelEngine.js',
         vectorDB: './js/vectorDB.js',
+        chatbotFrontend: './js/chatbotFrontend.js',
     },
     plugins: [
         new NodePolyfillPlugin()

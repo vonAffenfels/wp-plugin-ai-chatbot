@@ -1,6 +1,7 @@
 <?php
 
 use WP\Plugin\AIChatbot\Settings\Connection;
+use WP\Plugin\AIChatbot\Settings\Models;
 
 ?>
 <div class="wp-plugin-ai-chatbot page-model-engine">
@@ -56,11 +57,76 @@ use WP\Plugin\AIChatbot\Settings\Connection;
                     >
                 </td>
             </tr>
+            <tr data-models="<?php
+            echo Models::FIELD_EMBEDDING_MODEL ?>">
+                <th scope="row">
+                    <label for="<?php
+                    echo Models::FIELD_EMBEDDING_MODEL ?>">Embedding Model</label>
+                </th>
+                <td>
+                    <input
+                            type="text"
+                            class="modelInput"
+                            id="<?php
+                            echo Models::FIELD_EMBEDDING_MODEL ?>"
+                            name="<?php
+                            echo Models::FIELD_EMBEDDING_MODEL ?>"
+                            value="<?php
+                            echo $this->models->getEmbeddingModel(); ?>"
+                    >
+                </td>
+            </tr>
+            <tr data-models="<?php
+            echo Models::FIELD_GENERATION_MODEL ?>">
+                <th scope="row">
+                    <label for="<?php
+                    echo Models::FIELD_GENERATION_MODEL ?>">Generation Model</label>
+                </th>
+                <td>
+                    <input
+                            type="text"
+                            class="modelInput"
+                            id="<?php
+                            echo Models::FIELD_GENERATION_MODEL ?>"
+                            name="<?php
+                            echo Models::FIELD_GENERATION_MODEL ?>"
+                            value="<?php
+                            echo $this->models->getGenerationModel(); ?>"
+                    >
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    <label for="chatbotEnabled">Enable Chatbot</label>
+                </th>
+                <td>
+                    <input
+                        type="checkbox"
+                        id="chatbotEnabled"
+                        name="chatbotEnabled"
+                        <?php echo $this->chatbotEnabled ? 'checked' : '' ?>
+                    >
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    <label for="chatbotDefaultAnswer">Chatbot Default Answer</label>
+                </th>
+                <td>
+                    <input
+                            type="text"
+                            id="chatbotDefaultAnswer"
+                            name="chatbotDefaultAnswer"
+                            value="<?php echo $this->chatbotDefaultAnswer ?>"
+                    >
+                </td>
+            </tr>
             </tbody>
         </table>
 
         <p class="submit">
             <input type="submit" name="submit" id="submit" class="button button-primary" value="Save settings">
+            <input type="button" id="installModels" class="button" value="Install Models">
         </p>
     </form>
 

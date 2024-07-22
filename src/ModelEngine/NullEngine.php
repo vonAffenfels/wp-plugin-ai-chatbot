@@ -17,7 +17,22 @@ class NullEngine extends ModelEngine
         return null;
     }
 
-    public function askChatbotAsync($question)
+    public function askChatbotAsync($question, $relatedPostsContent)
+    {
+        return null;
+    }
+
+    public function installModelIfNeeded($modelName)
+    {
+        return null;
+    }
+
+    public function modelIsInstalled(string $modelName)
+    {
+        return null;
+    }
+
+    public function getEmbeddingDimensions()
     {
         return null;
     }

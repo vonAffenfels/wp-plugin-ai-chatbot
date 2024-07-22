@@ -1,0 +1,27 @@
+<button class="ai-chatbot-open-button" onclick="openForm()">Chat</button>
+
+<div class="ai-chatbot-chat-popup" id="ai-chatbot-form">
+    <div class="ai-chatbot-form-container">
+        <h1>Chat</h1>
+
+        <div class="ai-chatbot-chat-history" id="ai-chatbot-chat-history">
+
+        </div>
+
+        <label for="ai-chatbot-question"><b>Message</b></label>
+        <textarea rows="2" placeholder="Type message.." name="ai-chatbot-question" class="ai-chatbot-question" required></textarea>
+
+        <button class="ai-chatbot-btn ai-chatbot-submit btn">Send</button>
+        <button type="button" class="ai-chatbot-btn btn cancel" onclick="closeForm()">Close</button>
+    </div>
+</div>
+
+<script>
+    function openForm() {
+        document.getElementById("ai-chatbot-form").style.display = "block";
+    }
+
+    function closeForm() {
+        document.getElementById("ai-chatbot-form").style.display = "none";
+    }
+</script>

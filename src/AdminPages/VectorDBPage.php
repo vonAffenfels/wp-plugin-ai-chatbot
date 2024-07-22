@@ -95,6 +95,9 @@ final class VectorDBPage
             }
         }
 
+        update_option('ai-chatbot-search-tolerance', $this->request->getParam('searchTolerance'));
+
+
         $this->connection->save();
 
         /** @var Notice $notice */

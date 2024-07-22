@@ -6,29 +6,35 @@ use Psr\Http\Message\StreamInterface;
 use WP\Plugin\AIChatbot\Attributes\IsModelEngine;
 use WP\Plugin\AIChatbot\Settings\Connection;
 use GuzzleHttp\Client;
+use WP\Plugin\AIChatbot\Settings\Models;
+
+use function PHPUnit\Framework\stringContains;
 
 #[IsModelEngine(
     id: 'ollama',
     description: 'Ollama Model Engine',
     shownConnectionSettings: [
         Connection::FIELD_HOST,
+    ],
+    showModelSettings: [
+        Models::FIELD_EMBEDDING_MODEL,
+        Models::FIELD_GENERATION_MODEL
     ]
 )]
 class Ollama extends ModelEngine
 {
 
     private ?Client $client = null;
-    private string $embeddingModel = 'charaf/sfr-embedding';
-    private string $generationModel = 'cas/german-assistant-v7';
 
     public function __construct(
         protected readonly Connection $connection,
+        protected readonly Models $models,
         string $id,
         string $description = '',
-        array $shownConnectionSettings = []
+        array $shownConnectionSettings = [],
+        array $showModelSettings = []
     ) {
-        parent::__construct($id, $description, $shownConnectionSettings);
-        $this->installModelsIfNeeded();
+        parent::__construct($id, $description, $shownConnectionSettings, $showModelSettings);
     }
 
     public function getClient(): ?Client
@@ -48,7 +54,7 @@ class Ollama extends ModelEngine
                     'Content-Type' => 'application/json'
                 ],
                 'body' => json_encode([
-                    'model' => $this->embeddingModel,
+                    'model' => $this->models->getEmbeddingModel(),
                     'prompt' => $text
                 ])
             ])->getBody()->getContents(),
@@ -56,15 +62,21 @@ class Ollama extends ModelEngine
         )['embedding'];
     }
 
-    public function askChatbotAsync(string $text): StreamInterface
+    public function askChatbotAsync(string $question, $relatedPostsContent): StreamInterface
     {
         $response = $this->getClient()->post('/api/generate', [
             'headers' => [
                 'Content-Type' => 'application/json'
             ],
             'body' => json_encode([
-                'model' => $this->generationModel,
-                "prompt" => $text,
+                'model' => $this->models->getGenerationModel(),
+                "prompt" =>
+                    'Beantworte mir ' .
+                    $question .
+                    ' auf Basis dieser Informationen ' .
+                    $relatedPostsContent .
+                    ' in 3 einfachen Sätzen',
+
                 'stream' => true
             ])
         ]);
@@ -72,42 +84,52 @@ class Ollama extends ModelEngine
         return $response->getBody();
     }
 
-    private function installModelsIfNeeded()
+    public function installModelIfNeeded(string $modelName)
+    {
+        if (!$this->modelIsInstalled($modelName)) {
+            $pullResponse = $this->getClient()->post('/api/pull', [
+                'headers' => [
+                    'Content-Type' => 'application/json'
+                ],
+                'body' => json_encode([
+                    'name' => $modelName,
+                ])
+            ]);
+        }
+
+        $response = $pullResponse->getBody()->getContents();
+
+        if (stringContains($response, 'error'))
+        {
+            return [
+                "error" => true,
+                'response' => $response
+            ];
+        }
+
+        return [
+            'success' => true,
+            'response' => $response
+        ];
+
+    }
+
+    public function modelIsInstalled(string $modelName)
     {
         $installedModels = json_decode($this->getClient()->get('/api/tags')->getBody()->getContents(), true)['models'];
-        $embeddingModelInstalled = false;
-        $generationModelInstalled = false;
+        $modelIsInstalled = false;
 
         foreach ($installedModels as $installedModel) {
-            if (str_starts_with($installedModel['name'], $this->embeddingModel)) {
-                $embeddingModelInstalled = true;
-            } elseif (str_starts_with($installedModel['name'], $this->generationModel)) {
-                $generationModelInstalled = true;
+            if (str_starts_with($installedModel['name'], $modelName)) {
+                $modelIsInstalled = true;
             }
         }
 
-        if (!$embeddingModelInstalled)
-        {
-            $this->getClient()->post('/api/pull', [
-                'headers' => [
-                    'Content-Type' => 'application/json'
-                ],
-                'body' => json_encode([
-                    'name' => $this->embeddingModel,
-                ])
-            ]);
-        }
+        return $modelIsInstalled;
+    }
 
-        if (!$generationModelInstalled)
-        {
-            $this->getClient()->post('/api/pull', [
-                'headers' => [
-                    'Content-Type' => 'application/json'
-                ],
-                'body' => json_encode([
-                    'name' => $this->generationModel,
-                ])
-            ]);
-        }
+    public function getEmbeddingDimensions()
+    {
+        return null;
     }
 }

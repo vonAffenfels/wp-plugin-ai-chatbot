@@ -56,7 +56,8 @@ class VectorDBPageTemplate extends Template
             'engines' => $this->engines,
             'activeEngine' => $this->activeEngine,
             'connection' => $this->connection,
-            'postTypes' => $this->postTypes
+            'postTypes' => $this->postTypes,
+            'searchTolerance' => get_option('ai-chatbot-search-tolerance', 0.05000000),
         ];
     }
 }

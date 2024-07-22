@@ -16,7 +16,28 @@ class AnswerGenerator
 
     public function generateAnswerStream($question)
     {
-        return $this->modelHandler->askChatbotAsync($question);
+        $minHitscore = get_option('ai-chatbot-search-tolerance');
+        $relatedPosts = $this->searchRelatedPosts($question);
+
+        $postIDs = [];
+        $relatedPostsContent = '';
+        foreach ($relatedPosts['hits']['hits'] as $hit)
+        {
+            $postIDs[] = $hit['_id'];
+            $relatedPostsContent .= strip_tags(apply_filters( 'the_content', get_post_field( 'post_content', $hit['_id']) ));
+        }
+
+
+        if ($relatedPosts['hits']['max_score'] <= $minHitscore || empty($relatedPostsContent)) {
+            return [
+                'minScoreReached' => false,
+                "postIDs" => $postIDs
+            ];
+        }
+        return [
+            'minScoreReached' => true,
+            'stream' => $this->modelHandler->askChatbotAsync($question, '$relatedPostsContent'),
+            'postIDs' => $postIDs];
     }
 
 
@@ -24,5 +45,6 @@ class AnswerGenerator
     {
         $vector = $this->modelHandler->generateEmbedding($question);
         $relatedPosts = $this->vectorDBHandler->searchVectorDB($vector);
+        return $relatedPosts;
     }
 }

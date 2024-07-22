@@ -10,6 +10,7 @@ use WP\Plugin\AIChatbot\ModelEngine\ModelEngine;
 use WP\Plugin\AIChatbot\Plugin;
 use WP\Plugin\AIChatbot\Settings\ActiveEngine;
 use WP\Plugin\AIChatbot\Settings\Connection;
+use WP\Plugin\AIChatbot\Settings\Models;
 use WP\Plugin\AIChatbot\Templates\AdminPages\ModelEnginePageTemplate;
 
 final class ModelEnginePage
@@ -22,10 +23,10 @@ final class ModelEnginePage
         private readonly Request $request,
         private readonly ActiveEngine $activeEngine,
         private readonly Connection $connection,
+        private readonly Models $models,
         #[TaggedIterator('wp_plugin_ai_chatbot.engine')]
         iterable $engines,
-    )
-    {
+    ) {
         $this->engines = $engines;
     }
 
@@ -62,6 +63,32 @@ final class ModelEnginePage
         }
 
         $this->connection->save();
+
+        $generationModel = $this->request->getParam(Models::FIELD_GENERATION_MODEL, Request::TYPE_POST);
+        if (!is_null($generationModel)) {
+            if ($this->models->getGenerationModel() != $generationModel) {
+                $this->models->setGenerationModel($generationModel);
+            }
+        }
+
+        $embeddingModel = $this->request->getParam(Models::FIELD_EMBEDDING_MODEL, Request::TYPE_POST);
+        if (!is_null($embeddingModel)) {
+            if ($this->models->getEmbeddingModel() != $embeddingModel) {
+                $this->models->setEmbeddingModel($embeddingModel);
+            }
+        }
+
+        $this->models->save();
+
+
+        if (is_null($this->request->getParam('chatbotEnabled'))) {
+            update_option('ai-chatbot-frontend-enabled', false);
+        } else {
+            update_option('ai-chatbot-frontend-enabled', true);
+        }
+
+        update_option('ai-chatbot-default-answer', $this->request->getParam('chatbotDefaultAnswer'));
+
 
         /** @var Notice $notice */
         $notice = $this->plugin->getContainer()->get('template.notice');
@@ -107,6 +134,7 @@ final class ModelEnginePage
 
         $this->pageTemplate->setActiveEngine($this->activeEngine);
         $this->pageTemplate->setConnection($this->connection);
+        $this->pageTemplate->setModels($this->models);
 
         $this->pageTemplate->output();
     }

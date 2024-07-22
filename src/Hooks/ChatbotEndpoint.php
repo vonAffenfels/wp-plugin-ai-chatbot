@@ -52,50 +52,70 @@ class ChatbotEndpoint
             return;
         }
 
-        $stream = $this->answerGenerator->generateAnswerStream($question);
-        $unfinishedLine = '';
+        $response = $this->answerGenerator->generateAnswerStream($question);
+        if ($response['minScoreReached'] !== true)
+        {
+            echo "event: message\n";
+            echo "data: " . get_option('ai-chatbot-default-answer') . "\n";
+            ob_flush();
+            flush();
 
-        while (!$stream->eof()) {
-            $chunk = $stream->read(1024);
-
-            $lineArray = preg_split("/\r\n|\n|\r/", $chunk);
-
-            foreach ($lineArray as $line)
+            foreach ($response['postIDs'] as $postID)
             {
-                if ( $line === reset( $lineArray ) ) {
-                    $tmp = $unfinishedLine . $line;
-                    echo "event: message\n";
-                    echo "data: " . json_decode($tmp, true)['response'] . "\n\n";
-                    ob_flush();
-                    flush();
-                    usleep(1000 * 100);
-                    continue;
-                }
-
-                elseif ( $line === end( $lineArray ) ) {
-                    if (!str_ends_with($line, '"done":false}'))
-                    {
-                        $unfinishedLine = $line;
-                        break;
-                    }
-                }
-
                 echo "event: message\n";
-                echo "data: " . json_decode($line, true)['response'] . "\n\n";
+                echo "data: <a href='" . get_permalink($postID) . "'>" . get_the_title($postID) . "</a>\n\n";
                 ob_flush();
                 flush();
-
-                usleep(1000 * 100);
             }
-
-            if (connection_aborted()) break;
-
+            echo "event: stop\n";
+            echo "data: stopped\n\n";
+            ob_flush();
+            flush();
         }
 
-        echo "event: stop\n";
-        echo "data: stopped\n\n";
-        ob_flush();
+        else {
+            $stream = $response['stream'];
+            $unfinishedLine = '';
 
-        $stream->close();
+            while (!$stream->eof()) {
+                $chunk = $stream->read(1024);
+
+                $lineArray = preg_split("/\r\n|\n|\r/", $chunk);
+
+                foreach ($lineArray as $line) {
+                    if ($line === reset($lineArray)) {
+                        $tmp = $unfinishedLine . $line;
+                        echo "event: message\n";
+                        echo "data: " . json_decode($tmp, true)['response'] . "\n\n";
+                        ob_flush();
+                        flush();
+                        usleep(1000 * 100);
+                        continue;
+                    } elseif ($line === end($lineArray)) {
+                        if (!str_ends_with($line, '"done":false}')) {
+                            $unfinishedLine = $line;
+                            break;
+                        }
+                    }
+
+                    echo "event: message\n";
+                    echo "data: " . json_decode($line, true)['response'] . "\n\n";
+                    ob_flush();
+                    flush();
+
+                    usleep(1000 * 100);
+                }
+
+                if (connection_aborted()) {
+                    break;
+                }
+            }
+
+            echo "event: stop\n";
+            echo "data: stopped\n\n";
+            ob_flush();
+
+            $stream->close();
+        }
     }
 }
