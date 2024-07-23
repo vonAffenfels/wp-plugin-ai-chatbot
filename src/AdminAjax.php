@@ -21,7 +21,7 @@ class AdminAjax
         VectorDB $activeVectorDB,
         array $postTypes,
         int $page = 1,
-        int $limit = 25
+        int $limit = 10
     ): Response
     {
         $query = new WP_Query([

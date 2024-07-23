@@ -23,7 +23,7 @@ class AnswerGenerator
         $relatedPostsContent = '';
         foreach ($relatedPosts['hits']['hits'] as $hit)
         {
-            $postIDs[] = $hit['_id'];
+            $postIDs[] = $hit['_source']['postID'];
             $relatedPostsContent .= strip_tags(apply_filters( 'the_content', get_post_field( 'post_content', $hit['_id']) ));
         }
 

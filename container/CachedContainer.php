@@ -62,6 +62,7 @@ class CachedContainer extends Container
             'wp_plugin_ai_chatbot.model-handler' => 'getWpPluginAiChatbot_ModelhandlerService',
             'wp_plugin_ai_chatbot.vectorDB-handler' => 'getWpPluginAiChatbot_VectorDBhandlerService',
             'wp_plugin_ai_chatbot.vectorDB.opensearch' => 'getWpPluginAiChatbot_VectorDB_OpensearchService',
+            'wp_plugin_ai_chatbot.vectorDB.opensearchaws' => 'getWpPluginAiChatbot_VectorDB_OpensearchawsService',
         ];
         $this->aliases = [
             'VAF\\WP\\Framework\\Kernel\\PluginKernel' => 'kernel',
@@ -107,6 +108,7 @@ class CachedContainer extends Container
             '.abstract.instanceof.WP\\Plugin\\AIChatbot\\Templates\\AdminPages\\VectorDBPageTemplate' => true,
             '.abstract.instanceof.WP\\Plugin\\AIChatbot\\Templates\\Frontend\\ChatbotFrontendTemplate' => true,
             '.abstract.instanceof.WP\\Plugin\\AIChatbot\\VectorDB\\OpenSearch' => true,
+            '.abstract.instanceof.WP\\Plugin\\AIChatbot\\VectorDB\\OpenSearchAWS' => true,
             '.instanceof.VAF\\WP\\Framework\\PostObjects\\NavMenuItem.0.VAF\\WP\\Framework\\PostObjects\\NavMenuItem' => true,
             '.instanceof.VAF\\WP\\Framework\\PostObjects\\Page.0.VAF\\WP\\Framework\\PostObjects\\Page' => true,
             '.instanceof.VAF\\WP\\Framework\\PostObjects\\Post.0.VAF\\WP\\Framework\\PostObjects\\Post' => true,
@@ -130,6 +132,7 @@ class CachedContainer extends Container
             '.instanceof.WP\\Plugin\\AIChatbot\\Templates\\AdminPages\\VectorDBPageTemplate.0.WP\\Plugin\\AIChatbot\\Templates\\AdminPages\\VectorDBPageTemplate' => true,
             '.instanceof.WP\\Plugin\\AIChatbot\\Templates\\Frontend\\ChatbotFrontendTemplate.0.WP\\Plugin\\AIChatbot\\Templates\\Frontend\\ChatbotFrontendTemplate' => true,
             '.instanceof.WP\\Plugin\\AIChatbot\\VectorDB\\OpenSearch.0.WP\\Plugin\\AIChatbot\\VectorDB\\OpenSearch' => true,
+            '.instanceof.WP\\Plugin\\AIChatbot\\VectorDB\\OpenSearchAWS.0.WP\\Plugin\\AIChatbot\\VectorDB\\OpenSearchAWS' => true,
             'VAF\\WP\\Framework\\BaseWordpress' => true,
             'VAF\\WP\\Framework\\Kernel\\Kernel' => true,
             'VAF\\WP\\Framework\\Kernel\\WordpressKernel' => true,
@@ -159,6 +162,7 @@ class CachedContainer extends Container
             'WP\\Plugin\\AIChatbot\\VectorDBHandler' => true,
             'WP\\Plugin\\AIChatbot\\VectorDB\\Factory' => true,
             'WP\\Plugin\\AIChatbot\\VectorDB\\OpenSearch' => true,
+            'WP\\Plugin\\AIChatbot\\VectorDB\\OpenSearchAWS' => true,
         ];
     }
 
@@ -329,7 +333,8 @@ class CachedContainer extends Container
 
         return $container->services['WP\\Plugin\\AIChatbot\\AdminPages\\VectorDBPage'] = new \WP\Plugin\AIChatbot\AdminPages\VectorDBPage($a, $b, ($container->services['VAF\\WP\\Framework\\Request'] ??= new \VAF\WP\Framework\Request()), ($container->privates['WP\\Plugin\\AIChatbot\\Settings\\ActiveVectorDB'] ??= new \WP\Plugin\AIChatbot\Settings\ActiveVectorDB('active_vectorDB', $a, 'null')), ($container->privates['WP\\Plugin\\AIChatbot\\Settings\\Connection'] ?? self::getConnectionService($container)), ($container->privates['WP\\Plugin\\AIChatbot\\Settings\\PostTypes'] ??= new \WP\Plugin\AIChatbot\Settings\PostTypes('post_types', $a, ['postTypes' => []])), new RewindableGenerator(function () use ($container) {
             yield 0 => ($container->services['wp_plugin_ai_chatbot.vectorDB.opensearch'] ?? self::getWpPluginAiChatbot_VectorDB_OpensearchService($container));
-        }, 1));
+            yield 1 => ($container->services['wp_plugin_ai_chatbot.vectorDB.opensearchaws'] ?? self::getWpPluginAiChatbot_VectorDB_OpensearchawsService($container));
+        }, 2));
     }
 
     /**
@@ -402,7 +407,7 @@ class CachedContainer extends Container
      */
     protected static function getAdminajax_LoaderService($container)
     {
-        return $container->services['adminajax.loader'] = new \VAF\WP\Framework\AdminAjax\Loader(($container->services['kernel'] ?? $container->get('kernel', 1)), ($container->services['plugin'] ?? $container->get('plugin', 1)), ['WP\\Plugin\\AIChatbot\\AdminAjax' => [['callback' => 'regenerateEmbeddings', 'action' => 'regenerate-embeddings', 'params' => [['name' => 'activeModelEngine', 'type' => 'WP\\Plugin\\AIChatbot\\ModelEngine\\ModelEngine', 'isOptional' => false, 'default' => NULL, 'isServiceParam' => true, 'isNullable' => false], ['name' => 'activeVectorDB', 'type' => 'WP\\Plugin\\AIChatbot\\VectorDB\\VectorDB', 'isOptional' => false, 'default' => NULL, 'isServiceParam' => true, 'isNullable' => false], ['name' => 'postTypes', 'type' => 'array', 'isOptional' => false, 'default' => NULL, 'isServiceParam' => false, 'isNullable' => false], ['name' => 'page', 'type' => 'int', 'isOptional' => true, 'default' => 1, 'isServiceParam' => false, 'isNullable' => false], ['name' => 'limit', 'type' => 'int', 'isOptional' => true, 'default' => 25, 'isServiceParam' => false, 'isNullable' => false]], 'capability' => \VAF\WP\Framework\Utils\Capabilities::MANAGE_OPTIONS], ['callback' => 'installModels', 'action' => 'install-models', 'params' => [['name' => 'activeModelEngine', 'type' => 'WP\\Plugin\\AIChatbot\\ModelEngine\\ModelEngine', 'isOptional' => false, 'default' => NULL, 'isServiceParam' => true, 'isNullable' => false], ['name' => 'modelName', 'type' => 'string', 'isOptional' => false, 'default' => NULL, 'isServiceParam' => false, 'isNullable' => false]], 'capability' => \VAF\WP\Framework\Utils\Capabilities::MANAGE_OPTIONS], ['callback' => 'isModelInstalled', 'action' => 'model-is-installed', 'params' => [['name' => 'activeModelEngine', 'type' => 'WP\\Plugin\\AIChatbot\\ModelEngine\\ModelEngine', 'isOptional' => false, 'default' => NULL, 'isServiceParam' => true, 'isNullable' => false], ['name' => 'modelName', 'type' => 'string', 'isOptional' => false, 'default' => NULL, 'isServiceParam' => false, 'isNullable' => false]], 'capability' => \VAF\WP\Framework\Utils\Capabilities::MANAGE_OPTIONS]]], ($container->services['VAF\\WP\\Framework\\Request'] ??= new \VAF\WP\Framework\Request()));
+        return $container->services['adminajax.loader'] = new \VAF\WP\Framework\AdminAjax\Loader(($container->services['kernel'] ?? $container->get('kernel', 1)), ($container->services['plugin'] ?? $container->get('plugin', 1)), ['WP\\Plugin\\AIChatbot\\AdminAjax' => [['callback' => 'regenerateEmbeddings', 'action' => 'regenerate-embeddings', 'params' => [['name' => 'activeModelEngine', 'type' => 'WP\\Plugin\\AIChatbot\\ModelEngine\\ModelEngine', 'isOptional' => false, 'default' => NULL, 'isServiceParam' => true, 'isNullable' => false], ['name' => 'activeVectorDB', 'type' => 'WP\\Plugin\\AIChatbot\\VectorDB\\VectorDB', 'isOptional' => false, 'default' => NULL, 'isServiceParam' => true, 'isNullable' => false], ['name' => 'postTypes', 'type' => 'array', 'isOptional' => false, 'default' => NULL, 'isServiceParam' => false, 'isNullable' => false], ['name' => 'page', 'type' => 'int', 'isOptional' => true, 'default' => 1, 'isServiceParam' => false, 'isNullable' => false], ['name' => 'limit', 'type' => 'int', 'isOptional' => true, 'default' => 10, 'isServiceParam' => false, 'isNullable' => false]], 'capability' => \VAF\WP\Framework\Utils\Capabilities::MANAGE_OPTIONS], ['callback' => 'installModels', 'action' => 'install-models', 'params' => [['name' => 'activeModelEngine', 'type' => 'WP\\Plugin\\AIChatbot\\ModelEngine\\ModelEngine', 'isOptional' => false, 'default' => NULL, 'isServiceParam' => true, 'isNullable' => false], ['name' => 'modelName', 'type' => 'string', 'isOptional' => false, 'default' => NULL, 'isServiceParam' => false, 'isNullable' => false]], 'capability' => \VAF\WP\Framework\Utils\Capabilities::MANAGE_OPTIONS], ['callback' => 'isModelInstalled', 'action' => 'model-is-installed', 'params' => [['name' => 'activeModelEngine', 'type' => 'WP\\Plugin\\AIChatbot\\ModelEngine\\ModelEngine', 'isOptional' => false, 'default' => NULL, 'isServiceParam' => true, 'isNullable' => false], ['name' => 'modelName', 'type' => 'string', 'isOptional' => false, 'default' => NULL, 'isServiceParam' => false, 'isNullable' => false]], 'capability' => \VAF\WP\Framework\Utils\Capabilities::MANAGE_OPTIONS]]], ($container->services['VAF\\WP\\Framework\\Request'] ??= new \VAF\WP\Framework\Request()));
     }
 
     /**
@@ -422,7 +427,7 @@ class CachedContainer extends Container
      */
     protected static function getHook_LoaderService($container)
     {
-        return $container->services['hook.loader'] = new \VAF\WP\Framework\Hook\Loader(($container->services['kernel'] ?? $container->get('kernel', 1)), ['WP\\Plugin\\AIChatbot\\Hooks\\ChatbotEndpoint' => ['rest_api_init' => ['method' => 'registerChatbotEndpoint', 'priority' => 10, 'numParams' => 0, 'serviceParams' => []]], 'WP\\Plugin\\AIChatbot\\Hooks\\ChatbotFrontend' => ['wp_footer' => ['method' => 'registerChatbotFrontend', 'priority' => 10, 'numParams' => 0, 'serviceParams' => []], 'chatbot-test-hook' => ['method' => 'registerChatbotFrontend', 'priority' => 10, 'numParams' => 0, 'serviceParams' => []]], 'WP\\Plugin\\AIChatbot\\Hooks\\SavePost' => ['save_post' => ['method' => 'savePost', 'priority' => 10, 'numParams' => 2, 'serviceParams' => []]]]);
+        return $container->services['hook.loader'] = new \VAF\WP\Framework\Hook\Loader(($container->services['kernel'] ?? $container->get('kernel', 1)), ['WP\\Plugin\\AIChatbot\\Hooks\\ChatbotEndpoint' => ['rest_api_init' => ['method' => 'registerChatbotEndpoint', 'priority' => 10, 'numParams' => 0, 'serviceParams' => []]], 'WP\\Plugin\\AIChatbot\\Hooks\\ChatbotFrontend' => ['wp_footer' => ['method' => 'registerChatbotFrontend', 'priority' => 10, 'numParams' => 0, 'serviceParams' => []], 'chatbot-frontend-hook' => ['method' => 'registerChatbotFrontend', 'priority' => 10, 'numParams' => 0, 'serviceParams' => []]], 'WP\\Plugin\\AIChatbot\\Hooks\\SavePost' => ['save_post' => ['method' => 'savePost', 'priority' => 10, 'numParams' => 2, 'serviceParams' => []]]]);
     }
 
     /**
@@ -533,6 +538,16 @@ class CachedContainer extends Container
     protected static function getWpPluginAiChatbot_VectorDB_OpensearchService($container)
     {
         return $container->services['wp_plugin_ai_chatbot.vectorDB.opensearch'] = new \WP\Plugin\AIChatbot\VectorDB\OpenSearch(($container->privates['WP\\Plugin\\AIChatbot\\Settings\\Connection'] ?? self::getConnectionService($container)), ($container->privates['WP\\Plugin\\AIChatbot\\Settings\\PostTypes'] ??= new \WP\Plugin\AIChatbot\Settings\PostTypes('post_types', ($container->services['plugin'] ?? $container->get('plugin', 1)), ['postTypes' => []])), 'opensearch', 'OpenSearch', ['host', 'user', 'pass', 'disableSslVerify', 'embeddingIndex']);
+    }
+
+    /**
+     * Gets the public 'wp_plugin_ai_chatbot.vectorDB.opensearchaws' shared autowired service.
+     *
+     * @return \WP\Plugin\AIChatbot\VectorDB\OpenSearchAWS
+     */
+    protected static function getWpPluginAiChatbot_VectorDB_OpensearchawsService($container)
+    {
+        return $container->services['wp_plugin_ai_chatbot.vectorDB.opensearchaws'] = new \WP\Plugin\AIChatbot\VectorDB\OpenSearchAWS(($container->privates['WP\\Plugin\\AIChatbot\\Settings\\Connection'] ?? self::getConnectionService($container)), ($container->privates['WP\\Plugin\\AIChatbot\\Settings\\PostTypes'] ??= new \WP\Plugin\AIChatbot\Settings\PostTypes('post_types', ($container->services['plugin'] ?? $container->get('plugin', 1)), ['postTypes' => []])), 'opensearchaws', 'OpenSearch (AWS)', ['hosts', 'osAWSRegion', 'osAWSService', 'osAWSKey', 'osAWSSecret']);
     }
 
     /**

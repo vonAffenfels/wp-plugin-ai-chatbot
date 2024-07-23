@@ -198,25 +198,25 @@ class Connection extends EnvAwareSetting
     {
         $envData = [];
 
-        $baseUrl = getenv('CHATBOT_API_BASE_URL') ?: '';
-        $endpoint = getenv('CHATBOT_API_ENDPOINT') ?: '';
-        $clientCredentials = getenv('CHATBOT_CREDENTIALS') ?: '';
-        $clientId = getenv('CHATBOT_CLIENT_ID') ?: '';
-        $clientSecret = getenv('CHATBOT_CLIENT_SECRET') ?: '';
-        $token = getenv('CHATBOT_API_TOKEN') ?: getenv('CHATBOT_API_ACCESS_TOKEN') ?: '';
-        $hosts = getenv('CHATBOT_HOSTS') ?: '';
-        $user = getenv('CHATBOT_USER') ?: '';
-        $pass = getenv('CHATBOT_PASS') ?: '';
-        $disableSslVerify = getenv('CHATBOT_DISABLE_SSL_VERIFY') ?: null;
+        $baseUrl = getenv('SEARCH_API_BASE_URL') ?: '';
+        $endpoint = getenv('SEARCH_API_ENDPOINT') ?: '';
+        $clientCredentials = getenv('SEARCH_CREDENTIALS') ?: '';
+        $clientId = getenv('SEARCH_CLIENT_ID') ?: '';
+        $clientSecret = getenv('SEARCH_CLIENT_SECRET') ?: '';
+        $token = getenv('SEARCH_API_TOKEN') ?: getenv('SEARCH_API_ACCESS_TOKEN') ?: '';
+        $hosts = getenv('SEARCH_HOSTS') ?: '';
+        $user = getenv('SEARCH_USER') ?: '';
+        $pass = getenv('SEARCH_PASS') ?: '';
+        $disableSslVerify = getenv('SEARCH_DISABLE_SSL_VERIFY') ?: null;
 
         // OpenSearch AWS
-        $osAWSRegion = getenv('CHATBOT_OS_AWS_REGION')
+        $osAWSRegion = getenv('SEARCH_OS_AWS_REGION')
             ?: getenv('AWS_REGION')
                 ?: getenv('AWS_DEFAULT_REGION')
                     ?: null;
-        $osAWSService = getenv('CHATBOT_OS_AWS_SERVICE') ?: null;
-        $osAWSKey = getenv('CHATBOT_OS_AWS_KEY') ?: null;
-        $osAWSSecret = getenv('CHATBOT_OS_AWS_SECRET') ?: null;
+        $osAWSService = getenv('SEARCH_OS_AWS_SERVICE') ?: null;
+        $osAWSKey = getenv('SEARCH_OS_AWS_KEY') ?: null;
+        $osAWSSecret = getenv('SEARCH_OS_AWS_SECRET') ?: null;
 
         if (!empty($osAWSKey)) {
             $envData[self::FIELD_OS_AWS_KEY] = $osAWSKey;

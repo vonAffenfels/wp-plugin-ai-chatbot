@@ -2,6 +2,7 @@
     <form method="post" action="">
         <?php
 
+        use WP\Plugin\AIChatbot\OpenSearchAWSService;
         use WP\Plugin\AIChatbot\Settings\Connection;
         use WP\Plugin\AIChatbot\Settings\PostTypes;
 
@@ -144,7 +145,76 @@
                 </td>
             </tr>
 
+            <tr data-connection="<?php echo Connection::FIELD_OS_AWS_REGION ?>">
+                <th scope="row">
+                    <label for="<?php echo Connection::FIELD_OS_AWS_REGION ?>">AWS Region</label>
+                </th>
+                <td>
+                    <input
+                        <?php echo $this->connection->isFromEnv(Connection::FIELD_OS_AWS_REGION) ? 'readonly="readonly"' : '' ?>
+                            id="<?php echo Connection::FIELD_OS_AWS_REGION ?>"
+                            type="text"
+                            name="<?php echo Connection::FIELD_OS_AWS_REGION ?>"
+                            value="<?php echo htmlentities($this->connection->getOpenSearchAWSRegion()) ?>"
+                    >
+                </td>
+            </tr>
 
+            <tr data-connection="<?php echo Connection::FIELD_OS_AWS_SERVICE ?>">
+                <th scope="row">
+                    <label for="<?php echo Connection::FIELD_OS_AWS_SERVICE ?>">AWS Service</label>
+                </th>
+                <td>
+                    <select
+                        <?php echo $this->connection->isFromEnv(Connection::FIELD_OS_AWS_SERVICE) ? 'disabled="disabled"' : '' ?>
+                            id="<?php echo Connection::FIELD_OS_AWS_SERVICE ?>"
+                            name="<?php echo Connection::FIELD_OS_AWS_SERVICE ?>"
+                    >
+                        <option
+                                value="<?php echo OpenSearchAWSService::OPENSEARCH->value ?>"
+                            <?php echo ($this->connection->getOpenSearchAWSService() == OpenSearchAWSService::OPENSEARCH) ? 'selected="selected"' : '' ?>
+                        >
+                            Amazon OpenSearch Service
+                        </option>
+                        <option
+                                value="<?php echo OpenSearchAWSService::OPENSEARCH_SERVERLESS->value ?>"
+                            <?php echo ($this->connection->getOpenSearchAWSService() == OpenSearchAWSService::OPENSEARCH_SERVERLESS) ? 'selected="selected"' : '' ?>
+                        >
+                            Amazon OpenSearch Serverless
+                        </option>
+                    </select>
+                </td>
+            </tr>
+
+            <tr data-connection="<?php echo Connection::FIELD_OS_AWS_KEY ?>">
+                <th scope="row">
+                    <label for="<?php echo Connection::FIELD_OS_AWS_KEY ?>">AWS Authentification Key</label>
+                </th>
+                <td>
+                    <input
+                        <?php echo $this->connection->isFromEnv(Connection::FIELD_OS_AWS_KEY) ? 'readonly="readonly"' : '' ?>
+                            id="<?php echo Connection::FIELD_OS_AWS_KEY ?>"
+                            type="text"
+                            name="<?php echo Connection::FIELD_OS_AWS_KEY ?>"
+                            value="<?php echo htmlentities($this->connection->getOpenSearchAWSKey()) ?>"
+                    >
+                </td>
+            </tr>
+
+            <tr data-connection="<?php echo Connection::FIELD_OS_AWS_SECRET ?>">
+                <th scope="row">
+                    <label for="<?php echo Connection::FIELD_OS_AWS_SECRET ?>">AWS Authentification Secret</label>
+                </th>
+                <td>
+                    <input
+                        <?php echo $this->connection->isFromEnv(Connection::FIELD_OS_AWS_SECRET) ? 'readonly="readonly"' : '' ?>
+                            id="<?php echo Connection::FIELD_OS_AWS_SECRET ?>"
+                            type="password"
+                            name="<?php echo Connection::FIELD_OS_AWS_SECRET ?>"
+                            value="<?php echo htmlentities($this->connection->getOpenSearchAWSSecret()) ?>"
+                    >
+                </td>
+            </tr>
             <tr>
                 <th scope="row">
                     <label for="searchTolerance">Search Tolerance</label>

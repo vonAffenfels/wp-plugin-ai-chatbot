@@ -4,6 +4,7 @@ namespace WP\Plugin\AIChatbot\AdminPages;
 
 use Symfony\Component\DependencyInjection\Attribute\TaggedIterator;
 use VAF\WP\Framework\Request;
+use WP\Plugin\AIChatbot\OpenSearchAWSService;
 use WP\Plugin\AIChatbot\Plugin;
 use WP\Plugin\AIChatbot\Settings\ActiveVectorDB;
 use WP\Plugin\AIChatbot\Settings\Connection;
@@ -93,6 +94,29 @@ final class VectorDBPage
             if ($this->connection->getDisableSslVerify() !== $disableSslVerify) {
                 $this->connection->setDisableSslVerify($disableSslVerify);
             }
+        }
+
+        $osAWSRegion = $this->request->getParam(Connection::FIELD_OS_AWS_REGION, Request::TYPE_POST);
+        if (!is_null($osAWSRegion) && $this->connection->getOpenSearchAWSRegion() !== $osAWSRegion) {
+            $this->connection->setOpenSearchAWSRegion($osAWSRegion);
+        }
+
+        $osAWSService = $this->request->getParam(Connection::FIELD_OS_AWS_SERVICE, Request::TYPE_POST);
+        if (!is_null($osAWSService)) {
+            $osAWSService = OpenSearchAWSService::tryFrom($osAWSService);
+            if (!is_null($osAWSService) && $this->connection->getOpenSearchAWSService() !== $osAWSService) {
+                $this->connection->setOpenSearchAWSService($osAWSService);
+            }
+        }
+
+        $osAWSKey = $this->request->getParam(Connection::FIELD_OS_AWS_KEY, Request::TYPE_POST);
+        if (!is_null($osAWSKey) && $this->connection->getOpenSearchAWSKey() !== $osAWSKey) {
+            $this->connection->setOpenSearchAWSKey($osAWSKey);
+        }
+
+        $osAWSSecret = $this->request->getParam(Connection::FIELD_OS_AWS_SECRET, Request::TYPE_POST);
+        if (!is_null($osAWSSecret) && $this->connection->getOpenSearchAWSSecret() !== $osAWSSecret) {
+            $this->connection->setOpenSearchAWSSecret($osAWSSecret);
         }
 
         update_option('ai-chatbot-search-tolerance', $this->request->getParam('searchTolerance'));

@@ -33,32 +33,40 @@ $(function () {
         }
 
         function runReindex() {
-            ajaxRequest(
-                'wp-plugin-ai-chatbot_regenerate-embeddings',
-                {
+            $.ajax({
+                url: window['vaf_admin_ajax']['wp-plugin-ai-chatbot_regenerate-embeddings']['ajaxurl'],
+                type: 'post',
+                data: Object.assign({
                     page: currentPage,
                     postTypes: postTypes
-                },
-                function (data) {
-                    processed += data.processed
-                    addLogLine('Indexed posts ' + processed + '/' + data.total);
-                    currentPage++;
+                    },
+                    window['vaf_admin_ajax']['wp-plugin-ai-chatbot_regenerate-embeddings']['data']),
+                success: function (response) {
+                    if (response.success) {
+                        processed += response.data.processed
+                        addLogLine('Indexed posts ' + processed + '/' + response.data.total);
+                        currentPage++;
 
-                    if (processed >= data.total) {
-                        // No more posts
-                        addLogLine('Finished');
+                        if (processed >= response.data.total) {
+                            // No more posts
+                            addLogLine('Finished');
+                            setLoader(false);
+                            return;
+                        }
+
+                        runReindex();
+                    } else {
                         setLoader(false);
-                        return;
+                        addLogLine('Could not reindex: ' + response.message);
                     }
-
-                    runReindex();
                 },
-
-                function (msg) {
+                error: function (request, status, error) {
+                    const json = request['responseJSON'] || {};
                     setLoader(false);
-                    addLogLine('Could not reindex: ' + msg)
-                }
-            );
+                    addLogLine('Could not reindex: ' + json.message || error);
+                },
+                timeout: 300000
+            })
         }
 
        runReindex();
