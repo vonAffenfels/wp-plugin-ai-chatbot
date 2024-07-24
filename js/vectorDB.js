@@ -32,6 +32,22 @@ $(function () {
             spinner.css('visibility', loading ? 'visible' : 'hidden');
         }
 
+        $.ajax({
+            async: false,
+            url: window['vaf_admin_ajax']['wp-plugin-ai-chatbot_flush-embeddings']['ajaxurl'],
+            type: 'post',
+            data: Object.assign(
+                window['vaf_admin_ajax']['wp-plugin-ai-chatbot_flush-embeddings']['data']
+            ),
+            success: function () {
+                addLogLine('Index flushed');
+            },
+            error: function () {
+                addLogLine('Error flushing index');
+
+            }
+        });
+
         function runReindex() {
             $.ajax({
                 url: window['vaf_admin_ajax']['wp-plugin-ai-chatbot_regenerate-embeddings']['ajaxurl'],

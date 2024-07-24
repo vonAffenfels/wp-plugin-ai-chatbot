@@ -81,4 +81,21 @@ class AdminAjax
 
         return Response::error('');
     }
+
+
+    #[IsAdminAjaxAction(action: 'flush-embeddings', capability: Capabilities::MANAGE_OPTIONS)]
+    public function flushEmbeddings(
+        VectorDB $activeVectorDB,
+    ): Response
+    {
+
+        $response = $activeVectorDB->deleteIndex();
+
+        if ($response['acknowledged'] == true)
+        {
+            return Response::success([]);
+        }
+
+        return Response::error('');
+    }
 }

@@ -15,6 +15,7 @@ use WP\Plugin\AIChatbot\VectorDB\VectorDB;
 #[IsTemplate(templateFile: '@wp-plugin-ai-chatbot/adminpages/vectorDB')]
 #[UseScript(src: 'js/vectorDB.min.js', deps: ['jquery'])]
 #[UseAdminAjax('regenerate-embeddings')]
+#[UseAdminAjax('flush-embeddings')]
 class VectorDBPageTemplate extends Template
 {
     private ActiveVectorDB $activeEngine;

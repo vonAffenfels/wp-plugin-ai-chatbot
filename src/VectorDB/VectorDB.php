@@ -41,4 +41,6 @@ abstract class VectorDB
 
     abstract public function vectorSearch($vector): ?array;
 
+    abstract public function deleteIndex(): array;
+
 }

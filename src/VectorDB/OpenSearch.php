@@ -126,4 +126,12 @@ class OpenSearch extends VectorDB
         ]);
         return $docs;
     }
+
+
+    public function deleteIndex(): array
+    {
+        return $this->getClient()->indices()->delete([
+            'index' => $this->connection->getIndex(),
+        ]);
+    }
 }
