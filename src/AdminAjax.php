@@ -27,6 +27,7 @@ class AdminAjax
         $query = new WP_Query([
             'post_type' => $postTypes,
             'posts_per_page' => $limit,
+            'post_status' => 'publish',
             'offset' => ($page - 1) * $limit,
             'ignore_sticky_posts' => true,
             'order' => 'ASC',
