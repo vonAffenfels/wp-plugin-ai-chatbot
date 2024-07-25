@@ -130,5 +130,6 @@ class ChatbotEndpoint
 
             $stream->close();
         }
+        wp_die();
     }
 }
